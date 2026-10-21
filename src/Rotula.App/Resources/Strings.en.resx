@@ -1141,6 +1141,9 @@
   <data name="Status.Added" xml:space="preserve">
     <value>Added {0}</value>
   </data>
+  <data name="Status.DragToPlace" xml:space="preserve">
+    <value>Drag onto the label and release to place it</value>
+  </data>
   <data name="Status.Bar" xml:space="preserve">
     <value>Status bar</value>
   </data>
@@ -1203,6 +1206,12 @@
   </data>
   <data name="Tool.DataField" xml:space="preserve">
     <value>Data field</value>
+  </data>
+  <data name="Tool.DragHelp" xml:space="preserve">
+    <value>Drag the tool onto the label to place it there, or press it to add it at the default position.</value>
+  </data>
+  <data name="Tool.DragTip" xml:space="preserve">
+    <value>{0} - drag it onto the label, or click to add it</value>
   </data>
   <data name="Tool.Image" xml:space="preserve">
     <value>Image</value>

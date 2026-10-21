@@ -1141,6 +1141,9 @@
   <data name="Status.Added" xml:space="preserve">
     <value>Se añadió {0}</value>
   </data>
+  <data name="Status.DragToPlace" xml:space="preserve">
+    <value>Arrastra sobre la etiqueta y suelta para colocarlo</value>
+  </data>
   <data name="Status.Bar" xml:space="preserve">
     <value>Barra de estado</value>
   </data>
@@ -1203,6 +1206,12 @@
   </data>
   <data name="Tool.DataField" xml:space="preserve">
     <value>Campo de datos</value>
+  </data>
+  <data name="Tool.DragHelp" xml:space="preserve">
+    <value>Arrastra la herramienta a la etiqueta para colocarla allí, o púlsala para añadirla en la posición predeterminada.</value>
+  </data>
+  <data name="Tool.DragTip" xml:space="preserve">
+    <value>{0}: arrástralo a la etiqueta o haz clic para añadirlo</value>
   </data>
   <data name="Tool.Image" xml:space="preserve">
     <value>Imagen</value>

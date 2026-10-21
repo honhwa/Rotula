@@ -78,6 +78,9 @@ public sealed record ToolboxItem(ToolboxKind Kind, string NameKey, string Glyph)
 {
     /// <summary>Translated name.</summary>
     public string Name => Loc.Instance[NameKey];
+
+    /// <summary>Tooltip: the name plus the two ways to place it (click, or drag onto the label).</summary>
+    public string Tip => Loc.Get("Tool.DragTip", Name);
 }
 
 /// <summary>The services the main view-model depends on.</summary>
@@ -1347,9 +1350,18 @@ public sealed partial class MainViewModel : ObservableObject
         ReportLocked();
     }
 
-    /// <summary>Adds an element from the toolbox.</summary>
+    /// <summary>Adds an element from the toolbox at the default position (a click on a tool).</summary>
     [RelayCommand]
-    private void AddElement(ToolboxKind kind)
+    private void AddElement(ToolboxKind kind) => AddElementAt(kind, null, null);
+
+    /// <summary>
+    /// Adds an element from the toolbox. With a drop point (a tool dragged onto the canvas) the element lands there, snapped to the
+    /// grid and kept inside the label; without one it is staggered from the top-left so repeated clicks do not pile up.
+    /// </summary>
+    /// <param name="kind">What to create.</param>
+    /// <param name="xDots">Left edge of the new element in label dots, or null for the default position.</param>
+    /// <param name="yDots">Top edge of the new element in label dots, or null for the default position.</param>
+    public void AddElementAt(ToolboxKind kind, double? xDots, double? yDots)
     {
         var doc = Session.Document;
         LabelElement element = ElementFactory.Create(kind, doc, doc.Elements.Count, Loc.Get("Element.DefaultText"));
@@ -1366,6 +1378,8 @@ public sealed partial class MainViewModel : ObservableObject
         // A new QR code starts in the content builder; Cancel keeps the plain example code. Applying changes the element before it is
         // added, so the whole thing is one undo step.
         if (element is BarcodeElement { Symbology: BarcodeSymbology.QrCode } qr) Properties.PrepareNewQr(qr);
+        if (xDots is { } x && yDots is { } y)
+            DropPlacement.PlaceAt(element, Session.Bounds.GetBounds(element), x, y, doc, Grid);
         Commands.Add(element);
         StatusMessage = Loc.Get("Status.Added", PropertyPanelViewModel.ElementDisplayName(element));
     }

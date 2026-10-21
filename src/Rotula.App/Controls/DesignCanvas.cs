@@ -35,6 +35,8 @@ public sealed class DesignCanvas : FrameworkElement
     private static readonly Brush GuideBrush = new SolidColorBrush(Color.FromRgb(0xD6, 0x2F, 0x8B));
     private static readonly Brush GridDotBrush = new SolidColorBrush(Color.FromArgb(120, 110, 100, 90));
     private static readonly Pen MarginPen = CreatePen(Color.FromArgb(150, 200, 120, 0), 1, new DashStyle(new double[] { 3, 3 }, 0));
+    private static readonly Brush DropFill = new SolidColorBrush(Color.FromArgb(28, 0xC8, 0x42, 0x0F));
+    private static readonly Pen DropPen = CreatePen(Color.FromRgb(0xC8, 0x42, 0x0F), 1, new DashStyle(new double[] { 4, 3 }, 0));
 
     private MainViewModel? _vm;
     private WriteableBitmap? _bitmap;
@@ -56,6 +58,11 @@ public sealed class DesignCanvas : FrameworkElement
     private List<double> _hGuides = new();
     private (double X, double Y) _downDots;
 
+    // A tool being dragged from the toolbox over the canvas: the outline of where the new element would land.
+    private RectD? _dropFrame;
+    private ToolboxKind? _dropSampleKind;
+    private LabelElement? _dropSample;
+
     /// <summary>Creates the canvas.</summary>
     public DesignCanvas()
     {
@@ -63,6 +70,8 @@ public sealed class DesignCanvas : FrameworkElement
         FocusVisualStyle = null;
         ClipToBounds = true;
         SnapsToDevicePixels = true;
+        // Tools are dragged here from the toolbox; the label accepts them anywhere on the paper (see OnDrop).
+        AllowDrop = true;
         DataContextChanged += OnDataContextChanged;
         // The bitmap is already at screen resolution; nearest-neighbour keeps dots crisp when WPF has to resample.
         RenderOptions.SetBitmapScalingMode(this, BitmapScalingMode.NearestNeighbor);
@@ -177,6 +186,7 @@ public sealed class DesignCanvas : FrameworkElement
         DrawBadges(dc);
         DrawSelection(dc);
         DrawGuides(dc, labelRect);
+        if (_dropFrame is { } drop) DrawDropFrame(dc, drop);
         if (_mode == Mode.Marquee && _dragStarted)
         {
             var r = ToPixelRect(_marquee);
@@ -306,6 +316,85 @@ public sealed class DesignCanvas : FrameworkElement
         var pen = new Pen(GuideBrush, 1);
         foreach (double x in _vGuides) { var p = ToPixel(x, 0); dc.DrawLine(pen, new Point(p.X, labelRect.Y - 8), new Point(p.X, labelRect.Bottom + 8)); }
         foreach (double y in _hGuides) { var p = ToPixel(0, y); dc.DrawLine(pen, new Point(labelRect.X - 8, p.Y), new Point(labelRect.Right + 8, p.Y)); }
+    }
+
+    /// <summary>The dashed outline of the element a dragged tool would create, with a cross on the corner it would be anchored at.</summary>
+    private void DrawDropFrame(DrawingContext dc, RectD frame)
+    {
+        dc.DrawRectangle(DropFill, DropPen, ToPixelRect(frame));
+        var pen = new Pen(AccentBrush, 1);
+        var p = ToPixel(frame.X, frame.Y);
+        dc.DrawLine(pen, new Point(p.X - 6, p.Y), new Point(p.X + 6, p.Y));
+        dc.DrawLine(pen, new Point(p.X, p.Y - 6), new Point(p.X, p.Y + 6));
+    }
+
+    // ------------------------------------------------------------------------------- toolbox drop
+
+    /// <inheritdoc />
+    protected override void OnDragEnter(DragEventArgs e) => UpdateDropTarget(e);
+
+    /// <inheritdoc />
+    protected override void OnDragOver(DragEventArgs e) => UpdateDropTarget(e);
+
+    private void UpdateDropTarget(DragEventArgs e)
+    {
+        if (_vm is null || !ToolboxDrag.TryGet(e.Data, out var kind))
+        {
+            e.Effects = DragDropEffects.None;
+            e.Handled = true;
+            return;
+        }
+        var (x, y) = ToDots(e.GetPosition(this));
+        _dropFrame = DropFrame(kind, x, y);
+        InvalidateVisual();
+        e.Effects = DragDropEffects.Copy;
+        e.Handled = true;
+    }
+
+    /// <summary>
+    /// Where the element of a dragged tool would land, in dots. The element is built and measured once per tool and then only moved:
+    /// a text or a barcode has to be drawn to know its size, which is far too slow to repeat on every pointer move.
+    /// </summary>
+    private RectD DropFrame(ToolboxKind kind, double x, double y)
+    {
+        if (_dropSample is null || _dropSampleKind != kind)
+        {
+            _dropSample = ElementFactory.Create(kind, Doc, Doc.Elements.Count, Localization.Loc.Get("Element.DefaultText"));
+            _dropSampleKind = kind;
+        }
+        var bounds = _vm!.Session.Bounds.GetBounds(_dropSample);
+        DropPlacement.PlaceAt(_dropSample, bounds, x, y, Doc, _vm.Grid);
+        // Moving an element never re-measures it, so this is a cached lookup that only adds the new offset.
+        return _vm.Session.Bounds.GetBounds(_dropSample);
+    }
+
+    /// <inheritdoc />
+    protected override void OnDragLeave(DragEventArgs e)
+    {
+        base.OnDragLeave(e);
+        ClearDropTarget();
+    }
+
+    /// <inheritdoc />
+    protected override void OnDrop(DragEventArgs e)
+    {
+        base.OnDrop(e);
+        if (_vm is null || !ToolboxDrag.TryGet(e.Data, out var kind)) return;
+        var (x, y) = ToDots(e.GetPosition(this));
+        ClearDropTarget();
+        // One undo step, and the new element is selected so it can be nudged or edited straight away.
+        _vm.AddElementAt(kind, x, y);
+        Focus();
+        e.Handled = true;
+    }
+
+    private void ClearDropTarget()
+    {
+        if (_dropFrame is null && _dropSample is null) return;
+        _dropFrame = null;
+        _dropSample = null;
+        _dropSampleKind = null;
+        InvalidateVisual();
     }
 
     // ------------------------------------------------------------------------------- mouse

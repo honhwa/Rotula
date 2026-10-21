@@ -413,8 +413,11 @@
             <ItemsControl ItemsSource="{Binding Toolbox}" IsTabStop="False">
               <ItemsControl.ItemTemplate>
                 <DataTemplate>
+                  <!-- A click adds the element at the default position; dragging the tool onto the canvas places it under the pointer. -->
                   <Button Style="{StaticResource RailCommandButton}" Command="{Binding DataContext.AddElementCommand, RelativeSource={RelativeSource AncestorType=Window}}"
-                          CommandParameter="{Binding Kind}" ToolTip="{Binding Name}" AutomationProperties.Name="{Binding Name}">
+                          CommandParameter="{Binding Kind}" ToolTip="{Binding Tip}" AutomationProperties.Name="{Binding Name}"
+                          AutomationProperties.HelpText="{loc:T Tool.DragHelp}"
+                          PreviewMouseLeftButtonDown="OnToolDragStart" PreviewMouseMove="OnToolDragMove" PreviewMouseLeftButtonUp="OnToolDragEnd">
                     <Path Style="{StaticResource ToolIcon}" />
                   </Button>
                 </DataTemplate>

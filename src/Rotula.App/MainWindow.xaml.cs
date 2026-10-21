@@ -3,6 +3,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
+using Rotula.App.Controls;
 using Rotula.App.Localization;
 using Rotula.App.Views;
 using Rotula.App.ViewModels;
@@ -104,6 +105,42 @@ public partial class MainWindow : Window
         _vm.SelectNoneCommand.Execute(null);
         Design.FocusCanvas();
     }
+
+    // ------------------------------------------------------------------------------- dragging a tool onto the canvas
+
+    private Point _toolDragOrigin;
+    private bool _toolDragArmed;
+
+    /// <summary>Arms a drag when a toolbox tool is pressed (a click without movement still adds the element).</summary>
+    private void OnToolDragStart(object sender, MouseButtonEventArgs e)
+    {
+        _toolDragOrigin = e.GetPosition(this);
+        _toolDragArmed = e.LeftButton == MouseButtonState.Pressed;
+    }
+
+    /// <summary>
+    /// Once the pointer moves past the system drag threshold the press becomes a drag of the tool: the canvas shows where the element
+    /// would land and creates it there on release. Releasing without moving is left to the button, which adds it at the default position.
+    /// </summary>
+    private void OnToolDragMove(object sender, MouseEventArgs e)
+    {
+        if (!_toolDragArmed || e.LeftButton != MouseButtonState.Pressed) return;
+        if (sender is not FrameworkElement { DataContext: ToolboxItem item } source) return;
+        var p = e.GetPosition(this);
+        if (Math.Abs(p.X - _toolDragOrigin.X) < SystemParameters.MinimumHorizontalDragDistance &&
+            Math.Abs(p.Y - _toolDragOrigin.Y) < SystemParameters.MinimumVerticalDragDistance) return;
+
+        _toolDragArmed = false;
+        // The button took the mouse capture on its own press; the drag has to take it over or the release never reaches the canvas.
+        Mouse.Capture(null);
+        string hint = Loc.Get("Status.DragToPlace");
+        _vm.StatusMessage = hint;
+        DragDrop.DoDragDrop(source, ToolboxDrag.Create(item.Kind), DragDropEffects.Copy);
+        // A drop reports "Added ..."; a cancelled drag would leave the hint behind, so take it back.
+        if (_vm.StatusMessage == hint) _vm.StatusMessage = string.Empty;
+    }
+
+    private void OnToolDragEnd(object sender, MouseButtonEventArgs e) => _toolDragArmed = false;
 
     // ------------------------------------------------------------------------------- toolbar fit
 
