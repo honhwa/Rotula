@@ -251,4 +251,5 @@ A failed check is silent and is tried again the next day.
 ## winget
 
 `winget install P4Software.Rotula` installs the per-user package; `winget install P4Software.Rotula --scope machine` installs
-the MSI for all users (winget asks for administrator rights). The package is not in the winget catalogue yet; see the README.
+the MSI for all users (winget asks for administrator rights). The package is not in the winget catalogue yet; the submission
+steps are in [releasing.md](releasing.md).

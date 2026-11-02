@@ -269,7 +269,7 @@ try {
   Copy-Item -LiteralPath (Join-Path $publish 'Rotula.App.exe') -Destination $stage
   Copy-Item -LiteralPath (Join-Path $publishMcp 'Rotula.Mcp.exe') -Destination $stage
   Copy-Item -LiteralPath (Join-Path $publishEngine 'rotula.exe') -Destination $stage
-  foreach ($f in 'LICENSE', 'THIRD-PARTY-NOTICES.md', 'README.md') { Copy-Item -LiteralPath (Join-Path $repo $f) -Destination $stage }
+  foreach ($f in 'LICENSE', 'THIRD-PARTY-NOTICES.md') { Copy-Item -LiteralPath (Join-Path $repo $f) -Destination $stage }
   New-Item -ItemType Directory -Force -Path (Join-Path $stage 'docs'), (Join-Path $stage 'packs') | Out-Null
   Copy-Item -LiteralPath (Join-Path $repo 'docs\mcp.md') -Destination (Join-Path $stage 'docs')
   Copy-Item -LiteralPath (Join-Path $repo 'docs\print-engine.md') -Destination (Join-Path $stage 'docs')

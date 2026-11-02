@@ -5,9 +5,8 @@ body:
   - type: markdown
     attributes:
       value: |
-        Rotula is offline-first and Windows-only for now. Check the roadmap in the README first: EPL, TSPL and CPCL output, RFID,
-        database connections, a template marketplace, cloud sync, macOS and Linux, and multi-label sheets are known and not
-        yet planned work.
+        Rotula is offline-first and Windows-only for now. These are known and not yet planned work: EPL, TSPL and CPCL output,
+        RFID, database connections, a template marketplace, cloud sync, macOS and Linux, and multi-label sheets.
   - type: textarea
     id: problem
     attributes:

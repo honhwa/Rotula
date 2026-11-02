@@ -97,7 +97,7 @@ jobs:
           Copy-Item publish/win-x64/Rotula.App.exe, publish/win-x64-mcp/Rotula.Mcp.exe, publish/win-x64-engine/rotula.exe stage/
           New-Item -ItemType Directory -Force stage/docs | Out-Null
           Copy-Item docs/mcp.md, docs/print-engine.md stage/docs/
-          Copy-Item LICENSE, THIRD-PARTY-NOTICES.md, README.md stage/
+          Copy-Item LICENSE, THIRD-PARTY-NOTICES.md stage/
           Compress-Archive -Path stage/* -DestinationPath "artifacts/Rotula-$v-win-x64-portable-unsigned-ci.zip" -Force
 
       # Smoke test: the published exe must start and stay up (a missing native asset would crash it at once).

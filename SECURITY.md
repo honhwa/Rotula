@@ -26,4 +26,4 @@ daily request to the GitHub "latest release" API (see [docs/deployment.md](docs/
 - Anything that causes Rotula to write outside the folders you chose, or to send data anywhere other than the printer you selected.
 - Problems in the release packages (for example a mismatch with the published `SHA256SUMS.txt`).
 
-Release builds are not code-signed; see the README for what to expect from Windows SmartScreen.
+Release builds are not code-signed, so Windows shows the SmartScreen "unknown publisher" prompt the first time you run one; compare the download's SHA-256 with the published `SHA256SUMS.txt` before you run it.

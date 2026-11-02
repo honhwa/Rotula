@@ -236,7 +236,7 @@ no signing certificate (and the CI has no secrets). An unsigned MSIX cannot be i
 breaks the "works by double-click" goal. WiX 4+ is under the Open Source Maintenance Fee and MS-RL terms, which does not fit
 the "permissive licences only" rule as cleanly. Inno Setup is a free build-time tool (nothing from it is shipped inside the
 app), installs per user without administrator rights, handles the Spanish and English wizard, and winget supports it natively
-(`InstallerType: inno`). Unsigned installers only trigger the SmartScreen "unknown publisher" prompt, which the README
+(`InstallerType: inno`). Unsigned installers only trigger the SmartScreen "unknown publisher" prompt, which SECURITY.md
 documents. The script lives in `packaging/installer/Rotula.iss`; the CI installs Inno Setup with Chocolatey. If a signing
 certificate becomes available, signing both the exe and the installer is the only change needed.
 

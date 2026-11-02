@@ -85,7 +85,6 @@ Source: "{#SourceDir}\docs\mcp.md"; DestDir: "{app}\docs"; Flags: ignoreversion
 Source: "{#SourceDir}\docs\print-engine.md"; DestDir: "{app}\docs"; Flags: ignoreversion
 Source: "{#SourceDir}\packs\README.txt"; DestDir: "{app}\packs"; Flags: ignoreversion
 Source: "{#SourceDir}\THIRD-PARTY-NOTICES.md"; DestDir: "{app}"; Flags: ignoreversion
-Source: "{#SourceDir}\README.md"; DestDir: "{app}"; Flags: ignoreversion
 ; The icon of .rotula documents in Explorer. The registry entry below points at this file, so it must exist on disk (not only inside the exe).
 Source: "{#SourceDir}\Assets\rotula-document.ico"; DestDir: "{app}\Assets"; Flags: ignoreversion
 

@@ -63,8 +63,8 @@ trusts the exit code of the signing tool. Compare downloads with `SHA256SUMS.txt
 ## What is in a release
 
 - `Rotula-X.Y.Z-win-x64-setup.exe`: per-user installer. Installs `Rotula.App.exe`, `Rotula.Mcp.exe`, `rotula.exe`, `LICENSE`,
-  `LICENSE-THIRD-PARTY.txt`, `THIRD-PARTY-NOTICES.md`, `README.md`, `docs\mcp.md`, `docs\print-engine.md` and an empty `packs` folder (with a one-line
-  `README.txt`) beside the program. Uninstalling removes them, and the MCP settings file created next to the exe on first run.
+  `LICENSE-THIRD-PARTY.txt`, `THIRD-PARTY-NOTICES.md`, `docs\mcp.md`, `docs\print-engine.md` and an empty `packs` folder (with a
+  one-line `README.txt`) beside the program. Uninstalling removes them, and the MCP settings file created next to the exe on first run.
 - `Rotula-X.Y.Z-win-x64.msi`: machine-wide Windows Installer package for administrators (Program Files, every user; Intune,
   Group Policy, Configuration Manager). The same files as the setup exe. See [deployment.md](deployment.md).
 - `Rotula-X.Y.Z-win-x64-portable.zip`: the same files, nothing installed.
